@@ -3,575 +3,337 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Moje sekcije i fajlovi</title>
+  <title>Javne sekcije i fajlovi</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #172033;
-      --panel-light: #202d46;
-      --border: #334155;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --danger: #dc2626;
+      --bg:#0f172a; --panel:#172033; --panel2:#202d46; --border:#334155;
+      --text:#f8fafc; --muted:#94a3b8; --accent:#3b82f6; --danger:#b91c1c;
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #0b1120, var(--bg));
-      color: var(--text);
-    }
-
-    .container {
-      width: min(1150px, 92%);
-      margin: 0 auto;
-      padding: 35px 0 60px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
-    }
-
-    h1, h2, h3, p { margin-top: 0; }
-
-    h1 {
-      margin-bottom: 8px;
-      font-size: clamp(2rem, 5vw, 3rem);
-    }
-
-    header p, .empty, .section-description {
-      color: var(--muted);
-    }
-
-    button, .button {
-      border: 0;
-      border-radius: 10px;
-      padding: 11px 15px;
-      background: var(--accent);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: background .2s, transform .2s;
-    }
-
-    button:hover, .button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
-
-    button.secondary {
-      background: var(--panel-light);
-      border: 1px solid var(--border);
-    }
-
-    button.danger {
-      background: #7f1d1d;
-    }
-
-    button.small, .button.small {
-      padding: 8px 11px;
-      font-size: .85rem;
-    }
-
-    input[type="file"] { display: none; }
-
-    .sections {
-      display: grid;
-      gap: 22px;
-    }
-
-    .section-card {
-      background: rgba(23, 32, 51, .96);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 22px;
-      min-width: 0;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 17px;
-      margin-bottom: 18px;
-    }
-
-    .section-title {
-      margin: 0 0 7px;
-      font-size: 1.4rem;
-      overflow-wrap: anywhere;
-    }
-
-    .section-description {
-      margin: 0;
-      font-size: .9rem;
-    }
-
-    .section-actions, .file-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .files {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 13px;
-    }
-
-    .file-card {
-      background: #0f1a2d;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      min-width: 0;
-    }
-
-    .file-card h3 {
-      font-size: 1rem;
-      margin-bottom: 7px;
-      overflow-wrap: anywhere;
-    }
-
-    .file-meta {
-      color: var(--muted);
-      font-size: .82rem;
-      margin-bottom: 12px;
-    }
-
-    .preview {
-      width: 100%;
-      max-height: 190px;
-      object-fit: contain;
-      border-radius: 8px;
-      background: #080f1d;
-      margin-bottom: 12px;
-    }
-
-    pre {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      max-height: 180px;
-      overflow: auto;
-      padding: 10px;
-      border-radius: 8px;
-      background: #080f1d;
-      color: #c7d2fe;
-      font-size: .78rem;
-      margin: 0 0 12px;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 25px 10px;
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-    }
-
-    .empty-all {
-      text-align: center;
-      padding: 70px 20px;
-      border: 1px dashed var(--border);
-      border-radius: 16px;
-      color: var(--muted);
-    }
-
-    .empty-all h2 {
-      color: var(--text);
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: .85rem;
-      margin-top: 30px;
-    }
-
-    @media (max-width: 600px) {
-      .container { width: 94%; padding-top: 24px; }
-      .section-card { padding: 16px; }
-      header { align-items: stretch; }
-      header .button { text-align: center; }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(135deg,#0b1120,var(--bg));color:var(--text);font-family:Arial,sans-serif}
+    .container{width:min(1100px,92%);margin:auto;padding:34px 0 60px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+    h1{margin:0 0 8px;font-size:clamp(2rem,5vw,3rem)}
+    p{color:var(--muted)}
+    button,.button{border:0;border-radius:10px;padding:11px 15px;background:var(--accent);color:#fff;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block}
+    button:hover,.button:hover{filter:brightness(1.12)}
+    button.secondary{background:var(--panel2);border:1px solid var(--border)}
+    button.danger{background:var(--danger)}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    input[type=file]{display:none}
+    .notice{background:#172554;border:1px solid #1d4ed8;padding:13px 15px;border-radius:12px;margin-bottom:22px;color:#dbeafe}
+    .sections{display:grid;gap:22px}
+    .section{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px}
+    .section-header{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:18px}
+    h2{margin:0 0 7px;overflow-wrap:anywhere}
+    .muted{color:var(--muted);font-size:.9rem}
+    .actions,.file-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .small{padding:8px 11px;font-size:.85rem}
+    .files{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+    .file{background:#0f1a2d;border:1px solid var(--border);border-radius:12px;padding:14px;min-width:0}
+    .file h3{font-size:1rem;overflow-wrap:anywhere;margin:0 0 7px}
+    .preview{width:100%;max-height:210px;object-fit:contain;background:#080f1d;border-radius:8px;margin:8px 0 12px}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto;background:#080f1d;color:#c7d2fe;border-radius:8px;padding:10px;font-size:.8rem}
+    .empty{text-align:center;border:1px dashed var(--border);border-radius:12px;padding:30px;color:var(--muted)}
+    .status{margin:15px 0;color:#bfdbfe;min-height:20px}
+    .modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .modal-box{width:min(430px,100%);background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px}
+    .modal-box input{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;background:#0f1a2d;color:var(--text);margin:10px 0 16px}
+    @media(max-width:600px){.container{width:94%;padding-top:24px}.section{padding:16px}}
   </style>
 </head>
 <body>
-  <main class="container">
-    <header>
-      <div>
-        <h1>Moje sekcije</h1>
-        <p>Organizuj svoje kodove, screenshotove i druge fajlove.</p>
-      </div>
-      <button id="addSectionBtn" type="button">+ Dodaj sekciju</button>
-    </header>
+<main class="container">
+  <header>
+    <div>
+      <h1>Moje sekcije</h1>
+      <p>Javni prostor za organizovanje i deljenje fajlova.</p>
+    </div>
+    <button id="addSectionBtn">+ Dodaj sekciju</button>
+  </header>
 
-    <section id="sections" class="sections">
-      <div class="empty-all" id="emptyState">
-        <h2>Još nema sekcija</h2>
-        <p>Dodaj prvu sekciju i počni da ubacuješ fajlove.</p>
-        <button id="emptyAddBtn" type="button">+ Dodaj prvu sekciju</button>
-      </div>
-    </section>
+  <div class="notice">
+    Sadržaj je javan. Svako ko vidi ovaj sajt može da pregleda fajlove.
+    Za dodavanje i brisanje koristi se javni ključ samo za dozvole koje podesiš u Supabase-u.
+  </div>
 
-    <footer>
-      Fajlovi se čuvaju samo tokom ove sesije u browseru. Osvežavanje stranice ih briše.
-    </footer>
-  </main>
+  <div id="status" class="status"></div>
+  <section id="sections" class="sections"></section>
+</main>
 
-  <script>
-    const sectionsContainer = document.getElementById("sections");
-    const addSectionBtn = document.getElementById("addSectionBtn");
-    const emptyAddBtn = document.getElementById("emptyAddBtn");
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <h2>Nova sekcija</h2>
+    <label for="sectionName">Naziv sekcije</label>
+    <input id="sectionName" maxlength="100" placeholder="Npr. HTML projekti" />
+    <div class="actions">
+      <button id="confirmSection">Kreiraj</button>
+      <button class="secondary" id="cancelSection">Otkaži</button>
+    </div>
+  </div>
+</div>
 
-    let sections = [];
-    let sectionCounter = 0;
-    const DB_NAME = "CodeScreenshotVaultDB";
-    const STORE_NAME = "appState";
-    let db = null;
+<script>
+  // 1) U Supabase projektu idi na Project Settings > API.
+  // 2) Zameni sledeće dve vrednosti svojim Project URL-om i anon public key-em.
+  const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL_HERE";
+  const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+  const BUCKET = "public-files";
 
-    function openDatabase() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        request.onupgradeneeded = () => {
-          const database = request.result;
-          if (!database.objectStoreNames.contains(STORE_NAME)) {
-            database.createObjectStore(STORE_NAME, { keyPath: "id" });
-          }
-        };
-        request.onsuccess = () => {
-          db = request.result;
-          resolve();
-        };
-        request.onerror = () => reject(request.error);
-      });
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const sectionsEl = document.getElementById("sections");
+  const statusEl = document.getElementById("status");
+  const modal = document.getElementById("modal");
+  const sectionName = document.getElementById("sectionName");
+
+  let sections = [];
+
+  function status(message, error = false) {
+    statusEl.textContent = message;
+    statusEl.style.color = error ? "#fca5a5" : "#bfdbfe";
+  }
+
+  function escapePath(name) {
+    return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  async function loadSections() {
+    status("Učitavanje...");
+    const { data, error } = await client
+      .from("sections")
+      .select("id,name,created_at,files(id,name,path,size,mime_type,created_at)")
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      status("Greška pri učitavanju: " + error.message, true);
+      return;
     }
 
-    function saveState() {
-      if (!db) return;
-      const savedSections = sections.map(section => ({
-        id: section.id,
-        name: section.name,
-        files: section.files.map(item => ({
-          id: item.id,
-          name: item.name,
-          type: item.type,
-          size: item.size,
-          file: item.file
-        }))
-      }));
+    sections = data || [];
+    render();
+    status("");
+  }
 
-      const transaction = db.transaction(STORE_NAME, "readwrite");
-      transaction.objectStore(STORE_NAME).put({
-        id: "main",
-        sectionCounter,
-        sections: savedSections
-      });
+  function render() {
+    sectionsEl.innerHTML = "";
+
+    if (!sections.length) {
+      sectionsEl.innerHTML = '<div class="empty"><h2>Nema sekcija</h2><p>Klikni na „+ Dodaj sekciju“ da napraviš prvu.</p></div>';
+      return;
     }
 
-    function loadState() {
-      return new Promise((resolve, reject) => {
-        if (!db) return resolve();
-        const request = db.transaction(STORE_NAME, "readonly")
-          .objectStore(STORE_NAME)
-          .get("main");
-
-        request.onsuccess = () => {
-          const saved = request.result;
-          if (saved) {
-            sectionCounter = saved.sectionCounter || 0;
-            sections = (saved.sections || []).map(section => ({
-              id: section.id,
-              name: section.name,
-              files: (section.files || []).map(item => ({
-                id: item.id,
-                name: item.name,
-                type: item.type,
-                size: item.size,
-                file: item.file,
-                url: URL.createObjectURL(item.file)
-              }))
-            }));
-          }
-          resolve();
-        };
-        request.onerror = () => reject(request.error);
-      });
-    }
-
-    const codeExtensions = [
-      "html", "css", "js", "jsx", "ts", "tsx", "py", "java",
-      "cpp", "c", "cs", "php", "json", "xml", "md", "txt", "sql", "sh", "bat"
-    ];
-
-    function getExtension(name) {
-      const parts = name.toLowerCase().split(".");
-      return parts.length > 1 ? parts.pop() : "";
-    }
-
-    function getFileType(file) {
-      if (file.type.startsWith("image/")) return "image";
-      if (codeExtensions.includes(getExtension(file.name))) return "code";
-      return "other";
-    }
-
-    function formatSize(bytes) {
-      if (bytes < 1024) return bytes + " B";
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-    }
-
-    function makeId() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2);
-    }
-
-    function addSection() {
-      sectionCounter++;
-      sections.push({
-        id: makeId(),
-        name: "Nova sekcija " + sectionCounter,
-        files: []
-      });
-      saveState();
-      render();
-    }
-
-    function renameSection(section) {
-      const newName = prompt("Unesi novo ime sekcije:", section.name);
-      if (newName && newName.trim()) {
-        section.name = newName.trim();
-        saveState();
-        render();
-      }
-    }
-
-    function deleteSection(sectionId) {
-      const section = sections.find(item => item.id === sectionId);
-      if (!section) return;
-
-      const confirmed = confirm(
-        `Da li stvarno želiš da obrišeš sekciju "${section.name}" i sve fajlove u njoj?`
-      );
-
-      if (!confirmed) return;
-
-      section.files.forEach(file => URL.revokeObjectURL(file.url));
-      sections = sections.filter(item => item.id !== sectionId);
-      saveState();
-      render();
-    }
-
-    function addFilesToSection(section, selectedFiles) {
-      for (const file of selectedFiles) {
-        const duplicate = section.files.some(
-          item => item.name === file.name &&
-                  item.size === file.size &&
-                  item.lastModified === file.lastModified
-        );
-
-        if (!duplicate) {
-          section.files.push({
-            id: makeId(),
-            file,
-            name: file.name,
-            type: getFileType(file),
-            size: file.size,
-            url: URL.createObjectURL(file)
-          });
-        }
-      }
-      render();
-    }
-
-    function removeFile(section, fileId) {
-      const file = section.files.find(item => item.id === fileId);
-      if (file) URL.revokeObjectURL(file.url);
-
-      section.files = section.files.filter(item => item.id !== fileId);
-      saveState();
-      render();
-    }
-
-    function createFileCard(section, item) {
+    sections.forEach(section => {
       const card = document.createElement("article");
-      card.className = "file-card";
+      card.className = "section";
 
-      const title = document.createElement("h3");
-      title.textContent = item.name;
-
-      const meta = document.createElement("div");
-      meta.className = "file-meta";
-      meta.textContent = `${item.type.toUpperCase()} · ${formatSize(item.size)}`;
-
-      card.append(title, meta);
-
-      if (item.type === "image") {
-        const image = document.createElement("img");
-        image.className = "preview";
-        image.src = item.url;
-        image.alt = "Pregled fajla " + item.name;
-        card.appendChild(image);
-      } else if (item.type === "code") {
-        const pre = document.createElement("pre");
-        pre.textContent = "Učitavanje pregleda...";
-        card.appendChild(pre);
-
-        item.file.text().then(text => {
-          pre.textContent = text.slice(0, 12000) || "(Prazan fajl)";
-        }).catch(() => {
-          pre.textContent = "Pregled nije dostupan.";
-        });
-      }
-
-      const actions = document.createElement("div");
-      actions.className = "file-actions";
-
-      const download = document.createElement("a");
-      download.className = "button small";
-      download.href = item.url;
-      download.download = item.name;
-      download.textContent = "Preuzmi";
-
-      const remove = document.createElement("button");
-      remove.className = "danger small";
-      remove.type = "button";
-      remove.textContent = "Obriši";
-      remove.addEventListener("click", () => removeFile(section, item.id));
-
-      actions.append(download, remove);
-      card.appendChild(actions);
-
-      return card;
-    }
-
-    function createSectionCard(section) {
-      const card = document.createElement("article");
-      card.className = "section-card";
-
-      const sectionHeader = document.createElement("div");
-      sectionHeader.className = "section-header";
+      const header = document.createElement("div");
+      header.className = "section-header";
 
       const titleArea = document.createElement("div");
-
       const title = document.createElement("h2");
-      title.className = "section-title";
       title.textContent = section.name;
+      const count = document.createElement("div");
+      count.className = "muted";
+      count.textContent = `${(section.files || []).length} fajlova`;
+      titleArea.append(title, count);
 
-      const description = document.createElement("p");
-      description.className = "section-description";
-      description.textContent =
-        `${section.files.length} fajl${section.files.length === 1 ? "" : "ova"}`;
+      const actions = document.createElement("div");
+      actions.className = "actions";
 
-      titleArea.append(title, description);
+      const input = document.createElement("input");
+      input.type = "file";
+      input.multiple = true;
+      input.id = "files-" + section.id;
+      input.accept = ".html,.css,.js,.jsx,.ts,.tsx,.py,.java,.cpp,.c,.cs,.php,.json,.xml,.md,.txt,.sql,.png,.jpg,.jpeg,.gif,.webp,.svg";
 
-      const sectionActions = document.createElement("div");
-      sectionActions.className = "section-actions";
-
-      const fileInput = document.createElement("input");
-      fileInput.type = "file";
-      fileInput.multiple = true;
-      fileInput.id = "input-" + section.id;
-      fileInput.accept =
-        ".html,.css,.js,.jsx,.ts,.tsx,.py,.java,.cpp,.c,.cs,.php,.json,.xml,.md,.txt,.sql,.sh,.bat,.png,.jpg,.jpeg,.gif,.webp,.svg";
-
-      const addFilesLabel = document.createElement("label");
-      addFilesLabel.className = "button small";
-      addFilesLabel.htmlFor = fileInput.id;
-      addFilesLabel.textContent = "+ Dodaj fajlove";
-
-      fileInput.addEventListener("change", event => {
-        addFilesToSection(section, event.target.files);
-        fileInput.value = "";
-      });
+      const label = document.createElement("label");
+      label.className = "button small";
+      label.htmlFor = input.id;
+      label.textContent = "+ Dodaj fajlove";
+      input.addEventListener("change", e => uploadFiles(section, e.target.files));
 
       const rename = document.createElement("button");
       rename.className = "secondary small";
-      rename.type = "button";
       rename.textContent = "Preimenuj";
-      rename.addEventListener("click", () => renameSection(section));
+      rename.onclick = () => renameSection(section);
 
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "danger small";
-      deleteBtn.type = "button";
-      deleteBtn.textContent = "Obriši sekciju";
-      deleteBtn.addEventListener("click", () => deleteSection(section.id));
+      const remove = document.createElement("button");
+      remove.className = "danger small";
+      remove.textContent = "Obriši sekciju";
+      remove.onclick = () => deleteSection(section);
 
-      sectionActions.append(addFilesLabel, rename, deleteBtn, fileInput);
-      sectionHeader.append(titleArea, sectionActions);
-      card.appendChild(sectionHeader);
+      actions.append(label, rename, remove, input);
+      header.append(titleArea, actions);
+      card.appendChild(header);
 
-      const filesContainer = document.createElement("div");
-      filesContainer.className = "files";
+      const filesEl = document.createElement("div");
+      filesEl.className = "files";
 
-      if (section.files.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "Ova sekcija još nema fajlova. Klikni na „+ Dodaj fajlove“.";
-        filesContainer.appendChild(empty);
+      if (!section.files?.length) {
+        filesEl.innerHTML = '<div class="empty">Ova sekcija nema fajlova.</div>';
       } else {
-        section.files.forEach(item => {
-          filesContainer.appendChild(createFileCard(section, item));
-        });
+        section.files.forEach(file => filesEl.appendChild(createFileCard(section, file)));
       }
 
-      card.appendChild(filesContainer);
-      return card;
+      card.appendChild(filesEl);
+      sectionsEl.appendChild(card);
+    });
+  }
+
+  function createFileCard(section, file) {
+    const card = document.createElement("article");
+    card.className = "file";
+
+    const title = document.createElement("h3");
+    title.textContent = file.name;
+
+    const meta = document.createElement("div");
+    meta.className = "muted";
+    meta.textContent = `${formatSize(file.size || 0)} · ${file.mime_type || "fajl"}`;
+    card.append(title, meta);
+
+    const publicUrl = client.storage.from(BUCKET).getPublicUrl(file.path).data.publicUrl;
+
+    if ((file.mime_type || "").startsWith("image/")) {
+      const image = document.createElement("img");
+      image.className = "preview";
+      image.src = publicUrl;
+      image.alt = file.name;
+      card.appendChild(image);
+    } else if ((file.mime_type || "").startsWith("text/") || /\.(html|css|js|json|py|java|cpp|c|md|txt|sql)$/i.test(file.name)) {
+      const pre = document.createElement("pre");
+      pre.textContent = "Učitavanje pregleda...";
+      card.appendChild(pre);
+      fetch(publicUrl).then(r => r.text()).then(text => {
+        pre.textContent = text.slice(0, 12000) || "(Prazan fajl)";
+      }).catch(() => pre.textContent = "Pregled nije dostupan.");
     }
 
-    function render() {
-      sectionsContainer.innerHTML = "";
+    const actions = document.createElement("div");
+    actions.className = "file-actions";
 
-      if (sections.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty-all";
+    const download = document.createElement("a");
+    download.className = "button small";
+    download.href = publicUrl;
+    download.target = "_blank";
+    download.rel = "noopener";
+    download.textContent = "Otvori / preuzmi";
 
-        const heading = document.createElement("h2");
-        heading.textContent = "Još nema sekcija";
+    const remove = document.createElement("button");
+    remove.className = "danger small";
+    remove.textContent = "Obriši";
+    remove.onclick = () => deleteFile(section, file);
 
-        const text = document.createElement("p");
-        text.textContent = "Dodaj prvu sekciju i počni da ubacuješ fajlove.";
+    actions.append(download, remove);
+    card.appendChild(actions);
+    return card;
+  }
 
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = "+ Dodaj prvu sekciju";
-        button.addEventListener("click", addSection);
+  async function addSection() {
+    const name = sectionName.value.trim();
+    if (!name) return;
 
-        empty.append(heading, text, button);
-        sectionsContainer.appendChild(empty);
-        return;
-      }
+    status("Kreiranje sekcije...");
+    const { error } = await client.from("sections").insert({ name });
+    if (error) {
+      status("Greška: " + error.message, true);
+      return;
+    }
 
-      sections.forEach(section => {
-        sectionsContainer.appendChild(createSectionCard(section));
+    modal.classList.remove("open");
+    sectionName.value = "";
+    await loadSections();
+  }
+
+  async function renameSection(section) {
+    const name = prompt("Novo ime sekcije:", section.name);
+    if (!name || !name.trim()) return;
+
+    const { error } = await client.from("sections").update({ name: name.trim() }).eq("id", section.id);
+    if (error) status("Greška: " + error.message, true);
+    else await loadSections();
+  }
+
+  async function deleteSection(section) {
+    if (!confirm(`Obrisati sekciju „${section.name}“ i sve njene fajlove?`)) return;
+
+    for (const file of section.files || []) {
+      await client.storage.from(BUCKET).remove([file.path]);
+    }
+
+    const { error } = await client.from("sections").delete().eq("id", section.id);
+    if (error) status("Greška: " + error.message, true);
+    else await loadSections();
+  }
+
+  async function uploadFiles(section, selectedFiles) {
+    for (const file of selectedFiles) {
+      status(`Šaljem ${file.name}...`);
+      const path = `${section.id}/${Date.now()}-${escapePath(file.name)}`;
+
+      const upload = await client.storage.from(BUCKET).upload(path, file, {
+        contentType: file.type || "application/octet-stream",
+        upsert: false
       });
+
+      if (upload.error) {
+        status("Greška pri slanju: " + upload.error.message, true);
+        continue;
+      }
+
+      const insert = await client.from("files").insert({
+        section_id: section.id,
+        name: file.name,
+        path,
+        size: file.size,
+        mime_type: file.type || "application/octet-stream"
+      });
+
+      if (insert.error) {
+        await client.storage.from(BUCKET).remove([path]);
+        status("Greška pri čuvanju podataka: " + insert.error.message, true);
+      }
     }
 
-    addSectionBtn.addEventListener("click", addSection);
-    emptyAddBtn.addEventListener("click", addSection);
+    await loadSections();
+  }
 
-    (async function init() {
-      try {
-        await openDatabase();
-        await loadState();
-      } catch (error) {
-        console.error("Greška pri učitavanju:", error);
-      }
-      render();
-    })();
-  </script>
+  async function deleteFile(section, file) {
+    if (!confirm(`Obrisati fajl „${file.name}“?`)) return;
+
+    const storageResult = await client.storage.from(BUCKET).remove([file.path]);
+    if (storageResult.error) {
+      status("Greška: " + storageResult.error.message, true);
+      return;
+    }
+
+    const { error } = await client.from("files").delete().eq("id", file.id);
+    if (error) status("Greška: " + error.message, true);
+    else await loadSections();
+  }
+
+  document.getElementById("addSectionBtn").onclick = () => {
+    sectionName.value = "";
+    modal.classList.add("open");
+    sectionName.focus();
+  };
+  document.getElementById("cancelSection").onclick = () => modal.classList.remove("open");
+  document.getElementById("confirmSection").onclick = addSection;
+  modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+
+  if (SUPABASE_URL.includes("PASTE_") || SUPABASE_ANON_KEY.includes("PASTE_")) {
+    status("Prvo unesi Supabase URL i anon public key u kodu.", true);
+  } else {
+    loadSections();
+  }
+</script>
 </body>
 </html>
