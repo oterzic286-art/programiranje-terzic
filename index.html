@@ -240,6 +240,78 @@
 
     let sections = [];
     let sectionCounter = 0;
+    const DB_NAME = "CodeScreenshotVaultDB";
+    const STORE_NAME = "appState";
+    let db = null;
+
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          if (!database.objectStoreNames.contains(STORE_NAME)) {
+            database.createObjectStore(STORE_NAME, { keyPath: "id" });
+          }
+        };
+        request.onsuccess = () => {
+          db = request.result;
+          resolve();
+        };
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function saveState() {
+      if (!db) return;
+      const savedSections = sections.map(section => ({
+        id: section.id,
+        name: section.name,
+        files: section.files.map(item => ({
+          id: item.id,
+          name: item.name,
+          type: item.type,
+          size: item.size,
+          file: item.file
+        }))
+      }));
+
+      const transaction = db.transaction(STORE_NAME, "readwrite");
+      transaction.objectStore(STORE_NAME).put({
+        id: "main",
+        sectionCounter,
+        sections: savedSections
+      });
+    }
+
+    function loadState() {
+      return new Promise((resolve, reject) => {
+        if (!db) return resolve();
+        const request = db.transaction(STORE_NAME, "readonly")
+          .objectStore(STORE_NAME)
+          .get("main");
+
+        request.onsuccess = () => {
+          const saved = request.result;
+          if (saved) {
+            sectionCounter = saved.sectionCounter || 0;
+            sections = (saved.sections || []).map(section => ({
+              id: section.id,
+              name: section.name,
+              files: (section.files || []).map(item => ({
+                id: item.id,
+                name: item.name,
+                type: item.type,
+                size: item.size,
+                file: item.file,
+                url: URL.createObjectURL(item.file)
+              }))
+            }));
+          }
+          resolve();
+        };
+        request.onerror = () => reject(request.error);
+      });
+    }
 
     const codeExtensions = [
       "html", "css", "js", "jsx", "ts", "tsx", "py", "java",
@@ -274,6 +346,7 @@
         name: "Nova sekcija " + sectionCounter,
         files: []
       });
+      saveState();
       render();
     }
 
@@ -281,6 +354,7 @@
       const newName = prompt("Unesi novo ime sekcije:", section.name);
       if (newName && newName.trim()) {
         section.name = newName.trim();
+        saveState();
         render();
       }
     }
@@ -297,6 +371,7 @@
 
       section.files.forEach(file => URL.revokeObjectURL(file.url));
       sections = sections.filter(item => item.id !== sectionId);
+      saveState();
       render();
     }
 
@@ -327,6 +402,7 @@
       if (file) URL.revokeObjectURL(file.url);
 
       section.files = section.files.filter(item => item.id !== fileId);
+      saveState();
       render();
     }
 
@@ -487,7 +563,15 @@
     addSectionBtn.addEventListener("click", addSection);
     emptyAddBtn.addEventListener("click", addSection);
 
-    render();
+    (async function init() {
+      try {
+        await openDatabase();
+        await loadState();
+      } catch (error) {
+        console.error("Greška pri učitavanju:", error);
+      }
+      render();
+    })();
   </script>
 </body>
 </html>
